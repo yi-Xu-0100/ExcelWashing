@@ -24,7 +24,9 @@ def Read_jsyb_pzhz(pathtiqu, name):
         print("error:", e)
     else:
         print("%s is successfully read!" %name)
-        return(pzhzb)def Append_jsyb_pzhz(pathtiqu):
+        return(pzhzb)
+
+def Append_jsyb_pzhz(pathtiqu):
     try:
         files = os.listdir(pathtiqu)
         n = 0
@@ -43,7 +45,9 @@ def Read_jsyb_pzhz(pathtiqu, name):
         print("Error:", e)
     else:
         print("%s is successfully concat!" %name)
-        return(df)def Update_jsyb_pzhz(file_pzhz, pathtiqu):
+        return(df)
+
+def Update_jsyb_pzhz(file_pzhz, pathtiqu):
     try:
         df1 = pd.read_csv(file_pzhz, encoding='gbk')
         df2 = Append_jsyb_pzhz(pathtiqu)
