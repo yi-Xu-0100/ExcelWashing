@@ -10,13 +10,19 @@ Created Time: 2017年08月04日 星期五 12时52分10秒
 
 
 """ 
+import os
+import functools
+import sys
+import pandas as pd
+import numpy as np
+from . import generalFunction as gf
 #以下为jsyb的各类处理
 #1.处理jsyb的批处理函数
 """
 This is a functon for get data from form which from xls, and it will be compiled after the data summary.
 这是一个从xls中获取数据的函数，会将整理后的数据汇总。
 """
-@batchProcessing
+@gf.batchProcessing
 def jsybtiqu(path, name):
     try: #获取固定数据
         fileName = os.path.join(path, name)
