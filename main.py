@@ -3,12 +3,12 @@
 """
 fileName: main.py
 Created Time: 2017年08月07日 星期一 19时59分36秒
+description:
+    This is a tool to data processing.
+    这个一个进行数据处理的工具。
 """
+
 __author__ = 'yi_Xu'
-"""
-This is a tool to data processing.
-这个一个进行数据处理的工具。
-"""
 
 #以下是导入的库
 import os
