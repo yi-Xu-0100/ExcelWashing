@@ -21,14 +21,17 @@ This is a functon for get data from form which from xls, and it will be compiled
 这是一个从xls中获取数据的函数，会将整理后的数据汇总。
 """
 
+#设置jsyb类，继承于Batch，Batch在generalFunction中
 class Jsyb(gf.Batch):
-    def __init__(self, filesPath, csvPath, bakPath):
-        super().__init__(filesPath, csvPath, bakPath)
-
+    """
+        因为 Batch 已经定义过__init__，没有新的数据要加，所以不需要复写__init__
+        同样，getName, batchProcessing, getNewData, updata 均不予复写
+    """
+    #复写dataWashing类，定义表格处理方式
     def dataWashing(self,name):
         try: #获取固定数据
-            fileName = os.path.join(self.filesPath, name)
-            jsyb = pd.read_excel(fileName, '客户交易结算月报', header=None)
+            pName = os.path.join(self.filesPath, name)
+            jsyb = pd.read_excel(pName, '客户交易结算月报', header=None)
             df1 = pd.DataFrame()
             a1 = pd.Series(jsyb.iloc[4,7], index=jsyb.index[:1])
             df1['交易月份'] = a1
@@ -79,7 +82,7 @@ class Jsyb(gf.Batch):
                 df = df1
         except Exception as e: #如果有异常，捕捉并报错。
             print("Error in line: %s ，file name : %s" % (sys._getframe().f_lineno + 1, './MyPyBag/jsybFunction.py')) #显示报错的在文件的多少行和文件名。
-            print(fileName + "==>'客户交易结算月报' ***读取*** 异常，请检查！") #提示报错信息。
+            print(pName + "==>'客户交易结算月报' ***读取*** 异常，请检查！") #提示报错信息。
             print("Error:", e) #提示系统报错内容。
         else:
             print("%s is successfully read!" % name) #如果没有错误，显示读取成功。
