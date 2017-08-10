@@ -33,10 +33,16 @@ if __name__ == '__main__':
     except Exception as e:
             print("Error in line: %s , file name : %s" % (sys._getframe().f_lineno + 1, './main.py')) #输出行号
             print("Error:", e)
-    
-    
-    
-    
-    
-    
-    
+
+#2.pzhz的处理
+    try:
+        filesPath = './xls'#input("请输入 jsyb 表格所在位置：")
+        columns = ['交易日期', '品种', '手数', '成交额', '手续费', '平仓盈亏', '交易月份'] #设置列的排列应该与csv表格一致
+        csvPath = './csv'#input("请输入 'jsyb.csv' 表格位置：")
+        bakPath = './bak'#input("请输入 'jsyb_bak.csv'表格位置：") #保存方式，文件名后添加时间戳，仅保存两个，每次删掉时间更早的一份。
+        indexName = '交易月份'
+        pzhz = gf.Pzhz(filesPath, csvPath, bakPath, 'pzhz.csv', columns, indexName) #初始化一个Pzhz类，建立实例
+        print(pzhz.money)
+    except Exception as e:
+            print("Error in line: %s , file name : %s" % (sys._getframe().f_lineno + 1, './main.py')) #输出行号
+            print("Error:", e)

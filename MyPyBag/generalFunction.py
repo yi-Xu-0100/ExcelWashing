@@ -94,6 +94,7 @@ class Batch(object):
             print("Error:", e)
         else:
             data = df.append(data, ignore_index = True) #不修改df，data为新合并后的dataFrame。
+            data = data.applymap(lambda x: self.checkData(x)) #去除数据的特殊格式
             data = data.drop_duplicates() #去除重复行
         newData = data.iloc[len(df):] #新数据是旧数据之后的数据
         return(newData, data) #输出元组（新数据，csv的数据）
@@ -103,7 +104,7 @@ class Batch(object):
         csvName = os.path.join(self.csvPath, self.fileName) #获取csv地址+名字
         if len(newData) > 0: #判断有无新数据添加
             with open(csvName, 'a', encoding = 'gbk') as f: #追加模式添加数据
-                newData.to_csv(f, header = False, index = False, columns = self.columns)
+                newData.to_csv(f, header = False, index = False, columns = self.columns, encoding = 'gbk')
             print("%s is successfully Updata!" % newData)
         else:
             print("There is none of new data which need to pull request!")
@@ -113,17 +114,26 @@ class Batch(object):
         data.index = data[self.indexName]
         data.drop(self.indexName, axis = 1, inplace = True)
         data.index = pd.to_datetime(data.index)
+
+    #8.将datatime格式转为str,int转为float64
+    def checkData(self, data):
+        try:
+            data = data.strftime('%Y-%m-%d')
+        except Exception as e:
+            pass
+        return(data)
+
 #设置jsyb类，继承于Batch
 class Jsyb(Batch):
     """
         getName, batchProcessing, getNewData, updata 是通用函数，不予复写
     """
-    #复写__init__函数，定义jsyb类的属性
+    #1.复写__init__函数，定义jsyb类的属性
     def __init__(self, filesPath, csvPath, bakPath, fileName, columns, indexName): 
         super().__init__(filesPath, csvPath, bakPath, fileName, columns, indexName) #初始化各个的值
         self.money = self.data['当月结存']
 
-    #复写dataWashing函数，定义表格处理方式
+    #2.复写dataWashing函数，定义表格处理方式
     def dataWashing(self,name):
         try: #获取固定数据
             pName = os.path.join(self.filesPath, name)
@@ -183,3 +193,39 @@ class Jsyb(Batch):
         else:
             print("%s is successfully read!" % name) #如果没有错误，显示读取成功。
             return(df)
+
+#设置pahz类，继承于Batch
+class Pzhz(Batch):
+    """
+        getName, batchProcessing, getNewData, updata 是通用函数，不予复写
+    """
+    #1.复写__init__函数，定义jsyb类的属性
+    def __init__(self, filesPath, csvPath, bakPath, fileName, columns, indexName): 
+        super().__init__(filesPath, csvPath, bakPath, fileName, columns, indexName) #初始化各个的值
+        self.money = self.data['成交额']
+
+    #2.复写dataWashing函数，定义表格处理方式
+    def dataWashing(self,name):
+        try:
+            pname = os.path.join(self.filesPath, name)
+            pzhz = pd.read_excel(pname,'品种汇总',header=None)
+            pzhzb = pd.DataFrame()
+            pzhzb = pzhz.iloc[10:-1,0:6]
+            pzhzb.columns = ['交易日期','品种','手数','成交额','手续费','平仓盈亏']
+            a = pd.Series(pzhz.iloc[2,7],index=pzhzb.index)
+            pzhzb['交易月份'] = a
+            pzhzb.index = range(len(pzhzb.index))
+        except Exception as e:
+            print("Error in line: %s ，file name : %s" % (sys._getframe().f_lineno + 1, './MyPyBag/jsybFunction.py')) #显示报错的在文件的多少行和文件名。
+            print(pname + "==>'客户交易结算月报-->品种汇总' ***读取*** 异常，请检查！")
+            print("error:", e)
+        else:
+            print("%s is successfully read!" %name)
+            return(pzhzb)
+        
+        
+        
+        
+        
+        
+        
