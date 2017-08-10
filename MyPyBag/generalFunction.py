@@ -20,12 +20,21 @@ from datetime import datetime
 #基类
 class Batch(object):
     #0.类的初始化函数
-    def __init__(self, filesPath, csvPath, bakPath, fileName, columns): 
+    def __init__(self, filesPath, csvPath, bakPath, fileName, columns, indexName):
+        #定义参数
         self.filesPath = filesPath #xls文件保存位置
         self.csvPath = csvPath #csv文件保存位置
         self.bakPath = bakPath #bak文件保存位置
         self.fileName = fileName #csv文件名
         self.columns = columns #csv的header
+        self.indexName = indexName
+        #整理数据
+        df = self.batchProcessing() #调用批处理，获得所有xls文件的数据
+        self.backupData() #备份源csv文件
+        self.newData, self.data = self.getNewData(df) #获取与源csv对比后得到的新数据和合并新数据后的总数据
+        self.updata(self.newData) #更新csv文件
+        #设置索引
+        self.setIndex(self.data)
 
     #1.根据 '*.xls' 文件地址获取文件名
     def getName(self):
@@ -75,7 +84,7 @@ class Batch(object):
             os.remove(os.path.join(self.bakPath,bakFiles.pop(0))) #删除时间戳较早的那一个
         print("bakFiles by now: %s " % bakFiles)
 
-    #获得新数据函数
+    #5.获得新数据函数
     def getNewData(self, data):
         csvName = os.path.join(self.csvPath, self.fileName) #获取csv地址+名字
         try:
@@ -89,7 +98,7 @@ class Batch(object):
         newData = data.iloc[len(df):] #新数据是旧数据之后的数据
         return(newData, data) #输出元组（新数据，csv的数据）
 
-    #5.更新本地csv数据
+    #6.更新本地csv数据
     def updata(self, newData):
         csvName = os.path.join(self.csvPath, self.fileName) #获取csv地址+名字
         if len(newData) > 0: #判断有无新数据添加
@@ -99,19 +108,21 @@ class Batch(object):
         else:
             print("There is none of new data which need to pull request!")
 
+    #7.设置索引
+    def setIndex(self, data):
+        data.index = data[self.indexName]
+        data.drop(self.indexName, axis = 1, inplace = True)
+        data.index = pd.to_datetime(data.index)
 #设置jsyb类，继承于Batch
 class Jsyb(Batch):
     """
         getName, batchProcessing, getNewData, updata 是通用函数，不予复写
     """
     #复写__init__函数，定义jsyb类的属性
-    def __init__(self, filesPath, csvPath, bakPath, fileName, columns): 
-        super().__init__(filesPath, csvPath, bakPath, fileName, columns) #初始化各个的值
-        df = self.batchProcessing() #调用批处理，获得所有xls文件的数据
-        self.backupData() #备份源csv文件
-        self.newData, self.data = self.getNewData(df) #获取与源csv对比后得到的新数据和合并新数据后的总数据
-        self.updata(self.newData) #更新csv文件
+    def __init__(self, filesPath, csvPath, bakPath, fileName, columns, indexName): 
+        super().__init__(filesPath, csvPath, bakPath, fileName, columns, indexName) #初始化各个的值
         self.money = self.data['当月结存']
+
     #复写dataWashing函数，定义表格处理方式
     def dataWashing(self,name):
         try: #获取固定数据

@@ -27,7 +27,8 @@ if __name__ == '__main__':
         columns = ['交易日期','交易月份','上月结存','当月存取合计','当月盈亏','当月总权利金','当月手续费','当月结存','浮动盈亏','客户权益','实有货币资金','非货币充抵金额','货币充抵金额','冻结资金','保证金占用','可用资金','风险度','追加保证金','入金','出金','方式','摘要'] #设置列的排列应该与csv表格一致
         csvPath = './csv'#input("请输入 'jsyb.csv' 表格位置：")
         bakPath = './bak'#input("请输入 'jsyb_bak.csv'表格位置：") #保存方式，文件名后添加时间戳，仅保存两个，每次删掉时间更早的一份。
-        jsyb = gf.Jsyb(filesPath, csvPath, bakPath, 'jsyb.csv', columns) #初始化一个jsyb类，建立实例
+        indexName = '交易日期'
+        jsyb = gf.Jsyb(filesPath, csvPath, bakPath, 'jsyb.csv', columns, indexName) #初始化一个jsyb类，建立实例
         print(jsyb.money)
     except Exception as e:
             print("Error in line: %s , file name : %s" % (sys._getframe().f_lineno + 1, './main.py')) #输出行号
