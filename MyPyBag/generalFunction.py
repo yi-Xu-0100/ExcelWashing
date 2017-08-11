@@ -74,11 +74,11 @@ class Batch(object):
     #3.备份文件
     def backupData(self):
         time = datetime.now() #获取时间
-        datestamp ='(' + time.strftime("%y-%m-%d_%H:%M:%S") + ')' #获取时间戳
+        datestamp ='(' + time.strftime("%Y-%m-%d_%H-%M-%S") + ')' #获取时间戳
         newName = self.fileName[:4] + '_bak' + datestamp + self.fileName[4:] #获取新名字
         csvName = os.path.join(self.csvPath, self.fileName) #源文件的位置+名字
         bakName = os.path.join(self.bakPath, newName) #备份文件的位置+名字
-        shutil.copyfile(csvName, bakName) #复制文件
+        shutil.copy(csvName, bakName) #复制文件
         bakFiles = sorted([name for name in os.listdir(self.bakPath) if name[:4] == self.fileName[:4]]) #获取当前备份过的文件的时间戳，时间较早的在前面
         while (len(bakFiles) > 3): #如果文件数目大于 3 ，则删除到剩余 3 个
             os.remove(os.path.join(self.bakPath,bakFiles.pop(0))) #删除时间戳较早的那一个
