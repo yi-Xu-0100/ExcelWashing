@@ -1,0 +1,25 @@
+version: 1
+formatters:
+    simple:
+        format: '%(asctime)s - %(filename)s [%(levelname)s] %(message)s'
+handlers:
+    console:
+        class: logging.StreamHandler
+        level: INFO
+        formatter: simple
+        stream: ext://sys.stdout
+    logfile:
+        class: logging.handlers.RotatingFileHandler
+        level: INFO
+        formatter: simple
+        filename: '~/log.log'
+        maxBytes: 10*1024*1024
+        bakcpCount: 3
+loggers:
+    logger:
+        level: INFO
+        handlers: [console, logfile]
+        propagate: yes
+root:
+    level: WARNING
+    handlers: [console, logfile]
