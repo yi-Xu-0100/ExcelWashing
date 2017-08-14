@@ -107,7 +107,9 @@ class Jsrb_crjmx(bh.Batch):
                 crjmxb['交易日期'] = a
                 crjmxb.index = range(len(crjmxb.index))
             else: #如果上述数据没有，则跳过。
-                pass
+                crjmx.columns = ['发生日期', 1, '入金', 3, '出金', 5, '方式', '摘要']
+                crjmx = crjmx[['发生日期', '入金', '出金', '方式', '摘要']]
+                crjmxb = crjmx.copy()
         except Exception as e:
             print("Error in line: %s ，file name : %s" % (sys._getframe().f_lineno + 1, './Testzirb/jsrb.py')) #显示报错的在文件的多少行和文件名。
             print(jsrbName + "==>'客户交易结算日报-->出入金明细' ***读取*** 异常，请检查！")
@@ -241,7 +243,7 @@ class Jsrb_ccmx(bh.Batch):
             a = pd.Series(ccmx.iloc[2,7],index=ccmxb.index)
             ccmxb['交易日期'] = a
             ccmxb.index = range(len(ccmxb.index))
-        except Exception as e
+        except Exception as e:
             print("Error in line: %s ，file name : %s" % (sys._getframe().f_lineno + 1, './Testzirb/jsrb.py')) #显示报错的在文件的多少行和文件名。
             print("==>" + ccmxName + "'客户交易结算日报-->持仓明细' ***读取*** 异常，请检查！")
             print("error:", e)
