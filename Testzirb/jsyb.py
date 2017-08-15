@@ -14,7 +14,8 @@ import sys
 import pandas as pd
 import numpy as np
 from Testzirb import Batch as bh
-
+import logging
+logger = logging.getLogger("logger")
 
 
 # 设置 jsyb 类，继承于 Batch
@@ -25,15 +26,19 @@ class Jsyb(bh.Batch):
     #1.复写__init__函数，定义jsrb类的属性
     def __init__(self, filesPath, csvPath, bakPath, fileName, columns, indexName): 
         super().__init__(filesPath, csvPath, bakPath, fileName, columns, indexName) #初始化各个的值
+        logger.info("开始定义实例特殊属性！")
         self.totalcapital = self.data['当月结存']
         self.monthlyhandlingfee = self.data['当月手续费']
         self.monthlyprofitandloss = self.data['当月盈亏']
         self.monthlycash = self.data['可用资金']
         self.monthlyriskdegree = self.data['风险度']
+        logger.info("定义实例特殊属性成功！")
+        logger.info(" {classname} 实例全部属性定义成功！".format(classname = self.__class__))
 
     #2.复写dataWashing函数，定义表格处理方式
     def dataWashing(self, name):
         try: #获取固定数据
+            logger.debug("开始获取 {name} 的数据！".format(name = name))
             jsybName = os.path.join(self.filesPath, name)
             jsyb = pd.read_excel(jsybName, '客户交易结算月报', header=None)
             df = pd.DataFrame()
@@ -75,11 +80,10 @@ class Jsyb(bh.Batch):
             df['追加保证金'] = b9
             df.index = range(len(df.index))
         except Exception as e: #如果有异常，捕捉并报错。
-            print("Error in line: %s ，file name : %s" % (sys._getframe().f_lineno + 1, './Testzirb/jsyb.py')) #显示报错的在文件的多少行和文件名。
-            print(jsybName + "==>'客户交易结算月报' ***读取*** 异常，请检查！") #提示报错信息。
-            print("Error:", e) #提示系统报错内容。
+            logger.exception(jsybName + "==>'客户交易结算月报' ***读取*** 异常，请检查！原因如下：") #提示报错信息。
+            raise
         else:
-            print("%s is successfully read!" % name) #如果没有错误，显示读取成功。
+            logger.info("获取 {jsybName} 的数据成功！".format(jsybName = jsybName))
             return(df)
 
 #jsybName = os.path.join(r'F:\Text01\ExcelWashing-1.3\ExcelWashing-1.3\xls', '0123456789_2017-05.xls')
@@ -94,12 +98,16 @@ class Jsyb_crjmx(bh.Batch):
     #1.复写__init__函数，定义jsyb类的属性
     def __init__(self, filesPath, csvPath, bakPath, fileName, columns, indexName): 
         super().__init__(filesPath, csvPath, bakPath, fileName, columns, indexName) #初始化各个的值
+        logger.info("开始定义实例特殊属性！")
         self.intogold = self.data['入金']
         self.gold = self.data['出金']
+        logger.info("定义实例特殊属性成功！")
+        logger.info(" {classname} 实例全部属性定义成功！".format(classname = self.__class__))
 
     #2.复写dataWashing函数，定义表格处理方式
     def dataWashing(self, name):
         try:
+            logger.debug("开始获取 {name} 的数据！".format(name = name))
             jsybName = os.path.join(self.filesPath, name)
             jsyb = pd.read_excel(jsybName, '客户交易结算月报', header=None)
             crjmx = jsyb.iloc[21:-3,:]
@@ -115,11 +123,10 @@ class Jsyb_crjmx(bh.Batch):
                 crjmx = crjmx[['发生日期', '入金', '出金', '方式', '摘要']]
                 crjmxb = crjmx.copy()
         except Exception as e:
-            print("Error in line: %s ，file name : %s" % (sys._getframe().f_lineno + 1, './Testzirb/jsyb.py')) #显示报错的在文件的多少行和文件名。
-            print(jsybName + "==>'客户交易结算月报-->出入金明细' ***读取*** 异常，请检查！")
-            print("error:", e)
+            logger.exception(jsybName + "==>'客户交易结算月报-->出入金明细' ***读取*** 异常，请检查！原因如下：")
+            raise
         else:
-            print("%s is successfully read!" % name)
+            logger.info("获取 {jsybName} 的数据成功！".format(jsybName = jsybName))
             return(crjmxb)
 
 #crjmxb.to_csv('F:\Text01\ExcelWashing-1.3\ExcelWashing-1.3\csv\crjmxb.csv',encoding='gbk',index=False)
@@ -133,10 +140,12 @@ class Jsyb_pzhz(bh.Batch):
     #1.复写__init__函数，定义jsyb类的属性
     def __init__(self, filesPath, csvPath, bakPath, fileName, columns, indexName): 
         super().__init__(filesPath, csvPath, bakPath, fileName, columns, indexName) #初始化各个的值
-    
+        logger.info(" {classname} 实例全部属性定义成功！".format(classname = self.__class__))
+
     #2.复写dataWashing函数，定义表格处理方式
     def dataWashing(self, name):
         try:
+            logger.debug("开始获取 {name} 的数据！".format(name = name))
             pzhzName = os.path.join(self.filesPath, name)
             pzhz = pd.read_excel(pzhzName, '品种汇总', header=None)
             pzhzb = pd.DataFrame()
@@ -146,11 +155,10 @@ class Jsyb_pzhz(bh.Batch):
             pzhzb['交易月份'] = a
             pzhzb.index = range(len(pzhzb.index))
         except Exception as e:
-            print("Error in line: %s ，file name : %s" % (sys._getframe().f_lineno + 1, './Testzirb/jsyb.py')) #显示报错的在文件的多少行和文件名。
-            print(pzhzName + "==>'客户交易结算月报-->品种汇总' ***读取*** 异常，请检查！")
-            print("error:", e)
+            logger.exception(pzhzName + "==>'客户交易结算月报-->品种汇总' ***读取*** 异常，请检查！原因如下：")
+            raise
         else:
-            print("%s is successfully read!" % name)
+            logger.info("获取 {pzhzName} 的数据成功！".format(pzhzName = pzhzName))
             return(pzhzb)
 
 #pzhzb.to_csv('F:\Text01\ExcelWashing-1.3\ExcelWashing-1.3\csv\pzhzb.csv',encoding='gbk',index=False)
@@ -163,6 +171,7 @@ class Jsyb_ccmx(bh.Batch):
     #1.复写__init__函数，定义jsyb类的属性
     def __init__(self, filesPath, csvPath, bakPath, fileName, columns, indexName): 
         super().__init__(filesPath, csvPath, bakPath, fileName, columns, indexName) #初始化各个的值
+        logger.info("开始定义实例特殊属性！")
         self.contract = self.data["合约"]
         self.buypositions = self.data["买持仓"]
         self.buyprice = self.data["买入价"]
@@ -171,10 +180,13 @@ class Jsyb_ccmx(bh.Batch):
         self.yesterdaysetprice = self.data["昨结算价"]
         self.todaysetprice = self.data["今结算价"]
         self.profitandloss = self.data["持仓盈亏"]
-    
+        logger.info("定义实例特殊属性成功！")
+        logger.info(" {classname} 实例全部属性定义成功！".format(classname = self.__class__))
+
     #2.复写dataWashing函数，定义表格处理方式
     def dataWashing(self, name):
         try:
+            logger.debug("开始获取 {name} 的数据！".format(name = name))
             ccmxName = os.path.join(self.filesPath, name)
             ccmx = pd.read_excel(ccmxName, '持仓明细', header=None)
             ccmxyb = ccmx.iloc[10:-1,:]
@@ -184,11 +196,10 @@ class Jsyb_ccmx(bh.Batch):
             ccmxb['交易月份'] = a
             ccmxb.index = range(len(ccmxb.index))
         except Exception as e:
-            print("Error in line: %s ，file name : %s" % (sys._getframe().f_lineno + 1, './Testzirb/jsyb.py')) #显示报错的在文件的多少行和文件名。
-            print("==>" + ccmxName + "'客户交易结算月报-->持仓明细' ***读取*** 异常，请检查！")
-            print("error:", e)
+            logger.exception("==>" + ccmxName + "'客户交易结算月报-->持仓明细' ***读取*** 异常，请检查！原因如下：")
+            raise
         else:
-            print("%s is successfully read!" % name)
+            logger.info("获取 {ccmxName} 的数据成功！".format(ccmxName = ccmxName))
             return(ccmxb)
 
 #ccmxb.to_csv('F:\Text01\ExcelWashing-1.3\ExcelWashing-1.3\csv\jsyb_ccmx.csv',encoding='gbk',index=False)
@@ -202,16 +213,20 @@ class Jsyb_cjmx(bh.Batch):
     #1.复写__init__函数，定义jsyb类的属性
     def __init__(self, filesPath, csvPath, bakPath, fileName, columns, indexName): 
         super().__init__(filesPath, csvPath, bakPath, fileName, columns, indexName) #初始化各个的值
+        logger.info("开始定义实例特殊属性！")
         self.contract = self.data["合约"]
         self.transactionprice = self.data["成交价"]
         self.positions = self.data["手数"]
         self.turnover = self.data["成交额"]
         self.handlingfee = self.data["手续费"]
         self.flatprofitandloss = self.data["平仓盈亏"]
-    
+        logger.info("定义实例特殊属性成功！")
+        logger.info(" {classname} 实例全部属性定义成功！".format(classname = self.__class__))
+
     #2.复写dataWashing函数，定义表格处理方式
     def dataWashing(self, name):
         try:
+            logger.debug("开始获取 {name} 的数据！".format(name = name))
             cjmxName = os.path.join(self.filesPath, name)
             cjmx = pd.read_excel(cjmxName, '成交明细', header=None)
             cjmxyb = cjmx.iloc[10:-1,:]
@@ -221,11 +236,10 @@ class Jsyb_cjmx(bh.Batch):
             cjmxb['交易月份'] = a
             cjmxb.index = range(len(cjmxb.index))
         except Exception as e:
-            print("Error in line: %s ，file name : %s" % (sys._getframe().f_lineno + 1, './Testzirb/jsyb.py')) #显示报错的在文件的多少行和文件名。
-            print("==>" + cjmxName + "'客户交易结算月报-->成交明细' ***读取*** 异常，请检查！")
-            print("error:", e)
+            logger.exception("==>" + cjmxName + "'客户交易结算月报-->成交明细' ***读取*** 异常，请检查！原因如下：")
+            raise
         else:
-            print("%s is successfully read!" % name)
+            logger.info("获取 {cjmxName} 的数据成功！".format(cjmxName = cjmxName))
             return(cjmxb)
 
 

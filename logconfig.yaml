@@ -1,25 +1,26 @@
 version: 1
+disable_existing_loggers: Ture
 formatters:
     simple:
-        format: '%(asctime)s - %(filename)s [%(levelname)s] %(message)s'
+        format: '%(asctime)s - %(filename)s - %(lineno)d - [%(levelname)s] %(message)s'
 handlers:
     console:
         class: logging.StreamHandler
-        level: INFO
+        level: WARNING
         formatter: simple
         stream: ext://sys.stdout
     logfile:
         class: logging.handlers.RotatingFileHandler
-        level: INFO
+        level: DEBUG
         formatter: simple
-        filename: '~/log.log'
-        maxBytes: 10*1024*1024
-        bakcpCount: 3
+        filename: log.log
+        maxBytes: 10485760
+        backupCount: 3
 loggers:
     logger:
         level: INFO
-        handlers: [console, logfile]
+        handlers: [logfile]
         propagate: yes
 root:
     level: WARNING
-    handlers: [console, logfile]
+    handlers: [console]
