@@ -1,5 +1,5 @@
 version: 1
-disable_existing_loggers: Ture
+disable_existing_loggers: False
 formatters:
     simple:
         format: '%(asctime)s - %(filename)s - %(lineno)d - [%(levelname)s] %(message)s'

@@ -14,6 +14,7 @@ import os
 import sys
 from Testzirb import jsyb
 from Testzirb import jsrb
+from Testzirb import test
 import logging
 import logging.config
 import yaml
@@ -34,6 +35,12 @@ def setup_logging(default_path = "./logconfig.yaml",default_level = logging.INFO
 if __name__ == '__main__':
     setup_logging(default_path = "./logconfig.yaml")
     logger = logging.getLogger("logger")
+    logger.debug("测试debug")
+    logger.info("测试info")
+    logger.warn("测试warn")
+    logger.error("测试error")
+    logger.critical("测试critical")
+    test.test()
     logger.info("本次日志记录开始：")
 #1.1 jsyb 的处理
     try:
@@ -166,7 +173,7 @@ if __name__ == '__main__':
         print(jsrb_ccmx_170810.data)
     except Exception as e:
         logger.exception(' <class jsrb.Jsrb_ccmx> 实例化失败，数据无法获取！')
-    logger.info("本次日志记录完成！")
+    logger.info("本次日志记录完成！\n\n\n")
 
 
 
