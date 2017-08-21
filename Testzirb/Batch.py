@@ -66,7 +66,8 @@ class Batch(object):
         else:
             logger.debug("更新csv文件成功！")
         try:
-            self.setIndex(self.data)
+            logger.debug("开始设置索引！")
+            self.data.set_index(indexName)
         except Exception as e:
             logger.exception("设置索引失败！")
             logger.info(" {classname} 实例基础属性定义失败！".format(classname = self.__class__))
@@ -152,14 +153,7 @@ class Batch(object):
         else:
             logger.warning("没有新数据需要更新！")
 
-    #7.设置索引
-    def setIndex(self, data):
-        logger.debug("开始设置索引！")
-        data.index = data[self.indexName]
-        data.drop(self.indexName, axis = 1, inplace = True)
-        data.index = pd.to_datetime(data.index)
-
-    #8.将datatime格式转为str,int转为float64
+    #7.将datatime格式转为str,int转为float64
     def checkData(self, data):
         try:
             data = data.strftime('%Y-%m-%d')
